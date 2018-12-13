@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0 user-scalable=0">
+
+    <style>
+        html {
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+        }           
+
+        body {
+            font-family: Monospace;
+            margin: 0px;
+            overflow: hidden;
+        }
+
+        .input-group {
+            width: 100%;
+        }
+
+        .sidebar {
+            height: 100vh;
+            background: #eeeeee;
+            z-index: 99999999;
+            width: 20%;
+            float: left;
+            border-right: 1px solid #777777;
+        }
+
+        .sidebar-content {
+            height: 100%;
+            margin: 15px;
+
+        }
+
+        .sidebar-header {
+            font-size: 28px;
+            text-align: center;
+            margin: 15px;
+            padding-bottom: 15px;
+            border-bottom: solid 1px #777777;
+        }
+
+        .sidebar-item {
+            display: none;
+        }
+
+        .sidebar-item-list {
+            overflow: hidden;
+        }
+
+        .item-header {
+            cursor: pointer;
+            margin: auto;
+            padding-left: 15px;
+            font-size: 22px;
+            width: 100%;
+            background: #93c5f3;
+            border-radius: 3px;
+            margin-bottom: 5px;
+        }
+
+        .active-item {
+            height: fit-content;
+            display: block;
+            border-bottom: #777777 1px solid;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+        }
+
+        .active-item p {
+            font-size: 18px;
+            margin-bottom: 2px;
+        }
+
+        .active-item ul {
+            width: 100%;
+            height: 20%;
+            min-height: 150px;
+            max-height: 250px;
+            background: #eeeeee;
+            border: solid 1px #777777;
+            border-radius: 3px;
+            list-style: none;
+            padding: 0px;
+        }
+
+        .active-item li {
+            width: 100%;
+            padding-left: 10px;
+            padding-bottom: 3px;
+            padding-top: 3px;
+            padding-right: 10px;
+            border-bottom: 1px solid #777777;
+        }
+
+        .highlight-header {
+            font-size: 22px;
+        }
+
+        .active-item li:hover {
+            cursor: pointer;
+        }
+
+        .modellistItem {
+            padding-right: 10px;
+        }
+
+        .catalog-item {
+            font-size: 20px;
+        }
+
+        .catalog-item.disabled {
+            background: #bbbbbb;
+            color: #444444;
+        }
+
+        .form-control {
+            color: black !important;
+            border: 1px solid #777777;
+            border-radius: 3px !important;
+        }
+ 
+        .btn {
+            border: 1px solid #777777;
+            border-radius: 3px !important;
+        }
+
+        #container {
+            position: relative;
+            overflow: hidden;
+            float: right;
+            width: 80%;
+            height: 100vh;
+        }
+
+        .drawingCanvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 99;
+        }
+
+        #tooltip {
+            position: absolute;
+            background: #deeede;
+            border: 1px solid #333333;
+            opacity: 0;
+            width: fit-content;
+            height: fit-content;
+        }
+
+        #tooltip h1 {
+            text-align: center;
+            margin-left: 10px;
+            margin-right: 10px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        #cardDetails {
+            position: absolute;
+            right: 20px;
+            top: 150px;
+            background: #d2ebff;
+            color: black;
+            border: solid 1px black;
+            width: fit-content;
+            opacity: 0;
+        }
+
+        #cardDetails h1 {
+            font-size: 16px;
+            text-align: center;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        #cardDetails ul {
+            list-style: none;
+            margin-left: -30px;
+            margin-right: 10px;
+        }
+
+        #cardDetails ul li {
+            font-size: 15px;
+            margin-top: 10px;
+        }
+
+        .toolbar {
+            position: absolute;
+            width: 75px;
+            margin-right: 0px;
+            right: 2%;
+            top: 10%;
+            z-index: 100;
+        }
+
+        .tools-header {
+            float: right;
+            font-size: 32px;
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            padding: 0px;
+            padding-right: 8px;
+            padding-top: 8px;
+            color: white;
+            background: #333333;
+            margin-right: 5px;
+            text-align: right;
+            transition: margin-right 0.4s;
+        }
+
+        .tools-header:active {
+            filter: brightness(160%);
+        }
+
+        .tools-header:hover {
+            filter: brightness(130%);
+        }
+
+        .tools-header.tools-hidden {
+            margin-right: -35px;
+        }
+
+        .tools {
+            margin-top: 80px;
+            width: 100%;
+            opacity: 1;
+            transition: opacity 0.4s;
+        }
+
+        .tools.tools-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .toolbar-left {
+            position: absolute;
+            width: 125px;
+            height: fit-content;
+            top: 8%;
+            left: 20%;
+            z-index: 100;
+        }
+        
+        .toolbar-left-select {
+            opacity: 1;
+            padding-left: 30px;
+        }
+
+        .toolbar-left-select i {
+            font-size: 18px;
+            float: right;
+            padding-top: 8px;
+            padding-right: 10px;
+            padding-left: 0px;
+            margin-left: 0px;
+        }
+
+        .toolbar-left-select.tools-hidden {
+            opacity: 0;
+            pointer-events: none;
+            height: 0px;
+        }
+
+        .toolBtn {
+            text-align: center;
+            color: white;
+            width: 70px;
+            height: 70px;
+            padding: 0px;
+            font-size: 22px;
+            border-radius: 35px;
+            margin-bottom: 35px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.6) inset;
+            border: 1px solid #333333;
+        }
+
+        .toolBtn-square {
+            height: 45px;
+            width: 125px;
+            border-radius: 3px;
+            margin-bottom: 15px;
+            text-align: center;
+            padding-left: 5px;
+        }
+
+        .rainbow {
+            filter: brightness(80%);
+            background: red; /* For browsers that do not support gradients */
+            background: -webkit-linear-gradient(left, orange , yellow, green, cyan, blue, violet); /* For Safari 5.1 to 6.0 */
+            background: -o-linear-gradient(right, orange, yellow, green, cyan, blue, violet); /* For Opera 11.1 to 12.0 */
+            background: -moz-linear-gradient(right, orange, yellow, green, cyan, blue, violet); /* For Firefox 3.6 to 15 */
+            background: linear-gradient(to right, orange , yellow, green, cyan, blue, violet); /* Standard syntax (must be last) */
+        }
+
+        .toolBtn:active {
+            filter: brightness(55%);
+        }
+
+        .toolBtn:hover {
+            filter: brightness(70%);
+        }
+
+        .toolFooter {
+            width: 100%;
+        }
+
+        .toolFooter-item {
+            padding: 2%;
+            font-size: 22px;
+            color: white;
+            border: 1px solid black;
+            border-radius: 3px;
+            float: left;
+            width: 30%;
+            text-align: center;
+            text-shadow: 1px 1px black;
+        }
+
+        .toolFooter-item.selected {
+            border: 2px solid black;
+        }
+
+        .toolPanel {
+            background: black;
+            border-radius: 3px;
+            border: 2px solid #777777;
+            height: 100%;
+            width: 100%;
+        }
+
+        .tool {
+            position: absolute;
+            width: 40%;
+            height: 50%;
+            left: 50%;
+            top: 25%;
+            z-index: 100;
+        }
+
+        .tool.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .selection-rect {
+            position: absolute;
+            border: 1px solid #55ff33;
+            background: rgba(100,200,150,0.2);
+            left: 0;
+            top: 0;
+            width: 0;
+            height: 0;
+            z-index: 101;
+        }
+
+        .status {
+            opacity: 0;
+            position: absolute;
+            left: 22%;
+            top: 2%;
+            border-radius: 3px;
+            background: rgb(108, 224, 108);
+            z-index: 100;
+
+        }
+
+        .status.active {
+            opacity: 1;
+        }
+
+        .status-label {
+            color: black;
+            font-size: 22px;
+            margin: 0px;
+            padding-left:10px;
+            padding-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebar" class="sidebar" name="table">
+        <div class="sidebar-header"><img id="logo" width="100%" src=""></div>
+        <div class="sidebar-content">
+            <!-- <div class="item-header" onclick="toggleItem('sceneitem')">Scene</div>
+            <div id="sceneitem" class="sidebar-item active-item">
+                <p>Objects in Scene</p>
+                <ul class="sidebar-item-list">
+                    <li id="heart" onclick="selectSceneObject('heart')">heart <i onclick="hideSceneObject(event, 'heart')"
+                            style="float:right" class="glyphicon glyphicon-eye-open"></i></li>
+                    <li id="brain" onclick="selectSceneObject('brain')">brain <i onclick="hideSceneObject(event, 'brain')"
+                            style="float:right" class="glyphicon glyphicon-eye-open"></i></li>
+                </ul>
+            </div> -->
+            <div class="item-header" onclick="toggleItem('searchitem')">Add/Remove Objects</div>
+            <div id="searchitem" class="sidebar-item active-item">
+                <div class="input-group">
+                    <select style="margin-bottom: 20px;" id="method" name="method" class="form-control">
+                        <option value="ADD">Add Elements</option>
+                        <option value="REMOVE">Remove Elements</option>
+                        <option value="FIND">Highlight Elements</option>
+                    </select>
+                    <select id="profiles" style="margin-bottom: 2px;" name="profiles" class="form-control"></select>
+                    <select style="margin-bottom: 2px;" id="searchField" name="searchField" class="form-control">
+                        <optgroup label='Search in Field:'>
+                            <option value="Entity">Entity</option>
+                            <option value="Parts">Parts</option>
+                            <option value="Elements">Elements</option>
+                        </optgroup>
+                    </select>
+                    <input style="width: 82%; margin-bottom: 15px;" type="text" class="form-control" placeholder="search"
+                        id="search" name="search" onkeypress="keySearch(event)" tabindex="1">
+                    <button style="width: 18%;" class="btn btn-default" type="submit" onclick="searchInField()"><i
+                            class="glyphicon glyphicon-search"></i></button>
+                </div>
+            </div>
+            <div class="item-header" onclick="toggleItem('highlightitem')">Highlighted Objects</div>
+            <div id="highlightitem" class="sidebar-item">
+                <div class="input-group">
+                    <ul class="sidebar-item-list" id="highlightList">
+                        <li class="highlight-header">Highlights: </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="item-header" onclick="toggleItem('catalog')">Catalog</div>
+            <div id="catalog" class="sidebar-item active-item">
+                <ul class="sidebar-item-list" id="catalog-list">
+                    <li class="catalog-item" id="skeleton" onclick="searchInField('bone');toggleCatalogItem('skeleton');">Skeleton</li>
+                    <li class="catalog-item" id="brain" onclick="searchInField('brain');toggleCatalogItem('brain');">Brain</li>
+                    <li class="catalog-item" id="heart" onclick="searchInField('heart');toggleCatalogItem('heart');">Heart</li>
+                    <li class="catalog-item" id="abdomen" onclick="searchInField('abdomen');toggleCatalogItem('abdomen');">Abdomen</li>
+                    <li class="catalog-item" id="artery" onclick="searchInField('artery');toggleCatalogItem('artery');">Arteries</li>
+                    <li class="catalog-item" id="vein" onclick="searchInField('vein');toggleCatalogItem('vein');">Veins</li>
+                    <li class="catalog-item" id="extremities" onclick="searchInField('arm');searchInField('leg');toggleCatalogItem('extremities');">Extremities</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="statuslabel" class="status">
+        <p class="status-label">Drawing Mode</p>
+    </div>
+
+    <div class="toolbar">
+        <i onclick="toggleToolBar()" id="tools-header" class="glyphicon glyphicon-option-vertical tools-header"></i>
+        <br />
+        <div id="tools" class="tools">
+            <button class="toolBtn rainbow" id="colorButton"></button>
+            <button class="toolBtn" style="background: #44bb88" id="drawButton"><i class="glyphicon glyphicon-pencil"></i></button>
+            <button class="toolBtn" style="background: #bb8844" id="selectButton"><i class="glyphicon glyphicon-edit"></i></button>
+            <button class="toolBtn" style="background: #4488bb" id="removeButton"><i class="glyphicon glyphicon-erase"></i></button>
+            <button class="toolBtn" style="background: #bb4488" id="resetButton"><i class="glyphicon glyphicon-refresh"></i></button>
+        </div>
+    </div>
+
+    <div id="tool" class="tool hidden">
+        <div id="toolPanel" class="toolPanel"></div>
+        <div class="toolFooter" id="toolFooter">
+            <div class="toolFooter-item" id="toolFooterBackground" style="background: #d5e5e5;" onclick="selectFooterItem('toolFooterBackground')">Background</div>
+            <div class="toolFooter-item" id="toolFooterHover" style="background: #77bbff;" onclick="selectFooterItem('toolFooterHover')">Hover</div>
+            <div class="toolFooter-item" id="toolFooterSelect" style="background: #44ff66;" onclick="selectFooterItem('toolFooterSelect')">Select</div>
+            <div class="toolFooter-item" id="toolFooterReset" style="background: #777777; width: 10%;" onclick="resetColor()"><i
+                    class="glyphicon glyphicon-refresh"></i></div>
+        </div>
+    </div>
+    <div class="toolbar-left">
+        <div class="toolbar-left-select" id="selectOptions">
+            <button class="toolBtn toolBtn-square" onclick="addSelection()" style="background: #41da48; margin-right: 10px;"
+                id="selectConfirmButton">Select<i class="glyphicon glyphicon-ok"></i></button>
+            <button class="toolBtn toolBtn-square" onclick="removeSelection()" style="background: #e43131; margin-right: 35px;"
+                id="selectCancelButton">Remove<i class="glyphicon glyphicon-remove"></i></button>
+            <button class="toolBtn toolBtn-square" onclick="invertSelection()" style="background: #e4d831; margin-right: 35px;"
+                id="selectCancelButton">Invert<i class="glyphicon glyphicon-random"></i></button>
+            <!-- <button class="toolBtn toolBtn-square" style="background: #ebe082; margin-right: 35px;" id="selectNewSceneButton"><i class="glyphicon glyphicon-new-window"></i></button> -->
+        </div>
+    </div>
+
+    <div class="selection-rect" id="selectionRect"></div>
+
+    <img id="colorpickingImage" src="resources/gradient2.jpg" width="0" height="0">
+
+    <div id="container">
+        <div id="cardDetails" style="z-index: 1000">
+            <h1 id="cardName"></h1>
+            <ul id=cardDetailsList>
+                <li id=cardFilename></li>
+                <li id=cardConceptId></li>
+                <li id=cardVolume></li>
+            </ul>
+        </div>
+        <div id="tooltip" style="z-index: 1000">
+            <h1 id="tooltipName">tooltipName</h1>
+        </div>
+        <div style="text-align: center">
+            <img id="placeholder" src="" height="100%">
+        </div>
+    </div>
+</body>
+
+<script>
+    // VARS
+
+    var titleLogo;
+
+    // Sidebar vars
+    var searchField;
+    var searchvalue;
+    var sidebar;
+    var highlistList;
+    var activeListElement;
+    var method;
+    // Viewer vars
+    // Container and Canvas
+    var container, threeCanvas;
+    var backgroundColorDefault = '0xd5e5e5';
+    // Tooltip
+    var tooltip, tooltipName;
+    // Status
+    var statuslabel;
+    var statusText
+    // Tools
+    var tools;
+    var toolsHeader;
+    var tool;
+    var toolFooter;
+    var toolFooterActiveItem;
+    var colorButton;
+    var drawButton;
+    var drawingCanvas;
+    var resetButton;
+    var resetPosition;
+    var selectButton;
+    // Area-select vars
+    var selectFirstPointAbsolute;
+    var selectFirstPoint = {};
+    var selectSecondPoint = {};
+    var selectMesh;
+    var selectPlanes;
+    var thirdPoint = new THREE.Vector2();
+    var fourthPoint = new THREE.Vector2();
+    var nullPoint = new THREE.Vector2(0, 0);
+    var selectionRect;
+    var selectOptions;
+    // Card-Details
+    var cardDetails, cardDetailsList;
+    // THREE.js objects
+    var camera, scene, centerObject, centerGroup, raycaster, renderer, controls;
+    // Placeholder vars
+    var placeholderObject, placeholderRotation, placeholderRotationFactor, placeholderDirection;
+    // For Raycasting -> checking if cursor is hovering over an objects
+    var mouse = new THREE.Vector2(), INTERSECTED;
+    var hoverColor;
+    var hoverColorDefault = '0x77bbff';
+    var selectColor;
+    var selectColorDefault = '0x44ff66';
+    // Object Lists -> each object is assigned a boolean in each list
+    var selectedObjects = [];
+    var objectGroups = [];
+    var offsceneObjects = [];
+    var csgGeometries = {};
+    var duplicateObjects = {};
+    var highlightedObjects = {};
+    var objectCenters = {};
+    var modelsInScene = {};
+    // Global booleans to check for states
+    var mousePressed = false;
+    var selectingGroups = false;
+    var displayingTooltip = false;
+    var hoveringTooltip = false;
+    var moved = false;
+    var sceneHasObjects = false;
+    var frozen = false;
+    var selecting = false;
+    var choosingColor = false;
+    var isDrawing = false;
+    // Touch timer -> for double touch events
+    var lastTouchTime;
+    var lastTouchObject;
+    // absolute mouse position on screen -> used only for tooltip
+    var mousepos = {};
+    // todo
+    var removeButton;
+    var highlightedModels = [];
+
+    // Reference all the Elements in the document
+    titleLogo = document.getElementById("logo");
+    container = document.getElementById("container");
+    sidebar = document.getElementById("sidebar");
+    tooltip = document.getElementById("tooltip");
+    tooltipName = document.getElementById("tooltipName");
+    cardDetails = document.getElementById("cardDetails");
+    cardDetailsList = document.getElementById("cardDetailsList");
+    method = document.getElementById("method");
+    searchField = document.getElementById("searchField");
+    searchvalue = document.getElementById("search");
+    highlightList = document.getElementById("highlightList");
+    rightpanelList = document.getElementById("rightpanelList");
+    statuslabel = document.getElementById("statuslabel");
+    tools = document.getElementById("tools");
+    toolsHeader = document.getElementById("tools-header");
+    tool = document.getElementById("tool");
+    toolFooter = document.getElementById("toolFooter");
+    toolPanel = document.getElementById("toolPanel");
+    colorButton = document.getElementById("colorButton");
+    drawButton = document.getElementById("drawButton");
+    resetButton = document.getElementById("resetButton");
+    removeButton = document.getElementById("removeButton");
+    selectButton = document.getElementById("selectButton");
+    selectionRect = document.getElementById("selectionRect");
+    selectOptions = document.getElementById("selectOptions");
+
+</script>
+
+<script>
+    titleLogo.src = logo;
+    // Setting up the 3D Viewer
+    // Remove button to delete object from scene on the details card
+
+    // Mouse events when hovering a tooltip/detailsbox
+    tooltip.onmouseenter = function () { hoveringTooltip = true };
+    tooltip.onmouseleave = function () { hoveringTooltip = false };
+
+    cardDetails.onmouseenter = function () { hoveringTooltip = true };
+    cardDetails.onmouseleave = function () { hoveringTooltip = false };
+
+    // tool.onmouseenter = function () { hoveringTooltip = true };
+    // tool.onmouseleave = function () { hoveringTooltip = false };
+
+    hoverColor = hoverColorDefault;
+    selectColor = selectColorDefault;
+
+    // Raycasting is a method used to translate the mouse position on a 2-dimensional screen into the 3-dimensional scene
+    // Its drawing a line in 3-dimensional space relative to the mouse position and checks if any objects intersect with that line
+    function raycastObjects() {
+        if (!frozen) {
+            // Check if mouse is hovering over a tooltip -> skip if true
+            if (!hoveringTooltip) {
+                // Create Raycast from current mouseposition and camera
+                raycaster.setFromCamera(mouse, camera);
+                // Check for every object in the scene if its intersecting with the raycast and return to "intersects"
+                var intersects = raycaster.intersectObjects(offsceneObjects);
+                // Check if atleast one object was intersecting
+                if (intersects.length > 0) {
+                    if (selectingGroups) {
+                        if (INTERSECTED != inersects[0].object.parent.parent) {
+                            hoverOverObject(intersects[0].object.parent.parent);
+                        } else {
+                            // Same group is already selected
+                            // Possible issue -> One model belonging to more than 1 group
+                        }
+                    } else {
+                        // If the intersecting object is the same as the last intersection (last time this function was called) -> skip
+                        if (INTERSECTED != intersects[0].object) {
+                            // Setting the new object that is hovered over
+                            hoverOverObject(intersects[0].object);
+                        }
+                    }
+                } else {
+                    // Calling hoverOverObject() without parameters -> no object is hovered over
+                    hoverOverObject();
+                }
+            }
+        }
+    }
+
+    // Called when mouse cursor moves over an object
+    function hoverOverObject(hoverObject) {
+        // Reset the last object that was hovered over
+        if (INTERSECTED) {
+            if (selectingGroups) {
+                if (INTERSECTED.children[0].children[0].previousHex) {
+                    for (var i = 0; i < INTERSECTED.children.length; i++) {
+                    }
+                }
+            } else {
+                if (INTERSECTED.previousHex) {
+                    INTERSECTED.material.color.setHex(INTERSECTED.previousHex);
+                } else {
+                    INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
+                }
+            }
+        }
+        // If there is a new object hovered over
+        if (hoverObject) {
+            // Set INTERSECTED = the new object
+            INTERSECTED = hoverObject;
+            if (selectingGroups) {
+                //
+            } else {
+                // Save the current Hex value to return to if hovering is over
+                INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
+
+                // If the object is selected set a different hex value
+                if (selectedObjects.length === 1 && INTERSECTED.parent.name === selectedObjects[0].name) {
+                    INTERSECTED.material.color.setHex(selectColor);
+                } else {
+                    INTERSECTED.material.color.setHex(hoverColor);
+                }
+            }
+        } else {
+            INTERSECTED = null;
+        }
+
+        newTooltip();
+    }
+
+    // Creating or Deleting the tooltip depending whether or not user is hovering an object
+    function newTooltip() {
+        // Checking if user is hovering an object
+        if (INTERSECTED) {
+            // Check if the camera is zooming in or out -> skip if true
+            if (controls.getZoom()) {
+                // Camera is not zooming
+                // Fill the tooltip with the name of the object
+                tooltipName.innerHTML = INTERSECTED.name;
+                // Set the position of the tooltip the same as the mouse
+                tooltip.style.left = mousepos.x + "px";
+                tooltip.style.top = mousepos.y + "px";
+                // Set opacity to 1 (max)
+                tooltip.style.opacity = 1;
+                // Set global state of displaying tooltip to true
+                displayingTooltip = true;
+            }
+        } else {
+            // User is not hovering an object
+            // Setting tooltip opacity to 0 and global state of displaying tooltip to false
+            tooltip.style.opacity = 0;
+            displayingTooltip = false;
+        }
+    }
+
+    // Eventlisteners
+
+    // If the Browser is resized
+    function onWindowResize() {
+        // assign sidebarwidth the absolute width of the sidebar
+        sidebarwidth = sidebar.clientWidth;
+
+        // Recalculate the aspect-ratio of the 3d viewer
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+
+        // Set WEB-GL Renderer the size of the canvas
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        // Update the Trackball-Controls
+        controls.handleResize();
+    }
+
+    // If the user moves the mouse
+    function onDocumentMouseMove(event) {
+        if (!frozen) {
+            // If user is hovering a tooltip -> skip if true
+            if (!hoveringTooltip) {
+                // If the mouse is moving while user is pressing the mousebutton
+                if (mousePressed) {
+                    // Hide the tooltip
+                    if (displayingTooltip) {
+                        tooltip.style.opacity = 0;
+                        displayingTooltip = false;
+                    }
+                    // Set global state of moved to true
+                    if (!moved) {
+                        moved = true;
+                    }
+                } else {
+                    event.preventDefault();
+                    // Calculate new mouse position on the canvas
+                    mouse.x = ((event.clientX - sidebarwidth) / container.clientWidth) * 2 - 1;
+                    mouse.y = - ((event.clientY) / (container.clientHeight)) * 2 + 1;
+                    // Set absolute position of the mouse on the screen -> relevant for tooltips
+                    mousepos.x = event.clientX;
+                    mousepos.y = event.clientY;
+                    // Raycast from the new mouseposition
+                    raycastObjects();
+                }
+            }
+        } else {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+
+    function onContainerMouseDown(event) {
+        if (selecting) {
+            mousePressed = true;
+            selectFirstPointAbsolute = { x: event.pageX, y: event.pageY };
+            selectionRect.style.left = event.pageX + 'px';
+            selectionRect.style.top = event.pageY + 'px';
+            selectionRect.style.width = 0;
+            selectionRect.style.height = 0;
+            selectFirstPoint.x = ((event.clientX - sidebarwidth) / container.clientWidth) * 2 - 1;
+            selectFirstPoint.y = - ((event.clientY) / (container.clientHeight)) * 2 + 1;
+        } else {
+            mousePressed = true;
+        }
+    }
+
+    function onContainerMouseMove(event) {
+        if (mousePressed) {
+            if (!moved) {
+                moved = true;
+            }
+        }
+        if (selecting && mousePressed) {
+            if (selectFirstPoint != null) {
+                selectSecondPoint.x = ((event.clientX - sidebarwidth) / container.clientWidth) * 2 - 1;
+                selectSecondPoint.y = - ((event.clientY) / (container.clientHeight)) * 2 + 1;
+                selectionRect.style.width = Math.abs(selectFirstPointAbsolute.x - event.pageX) + 'px';
+                selectionRect.style.height = Math.abs(selectFirstPointAbsolute.y - event.pageY) + 'px';
+                selectionRect.style.left = (event.pageX - selectFirstPointAbsolute.x < 0) ? event.pageX + 'px' : selectFirstPointAbsolute.x + 'px';
+                selectionRect.style.top = (event.pageY - selectFirstPointAbsolute.y < 0) ? event.pageY + 'px' : selectFirstPointAbsolute.y + 'px';
+                createSelectionObject();
+            }
+        }
+    }
+
+    function onContainerMouseUp(event) {
+        if (selecting) {
+            if (selectFirstPoint != null) {
+                selectSecondPoint.x = ((event.clientX - sidebarwidth) / container.clientWidth) * 2 - 1;
+                selectSecondPoint.y = - ((event.clientY) / (container.clientHeight)) * 2 + 1;
+                createSelectionObject(true);
+                mousePressed = false;
+            }
+        } else {
+            console.log('mouseup');
+            mousePressed = false;
+            if (!moved && !hoveringTooltip) {
+                console.log('selecting');
+                raycastObjects();
+                select();
+            }
+        }
+        moved = false;
+    }
+
+    function onContainerTouchStart(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (selecting) {
+            mousePressed = true;
+            selectFirstPointAbsolute = { x: event.pageX, y: event.pageY };
+            selectionRect.style.left = event.pageX + 'px';
+            selectionRect.style.top = event.pageY + 'px';
+            selectionRect.style.width = 0;
+            selectionRect.style.height = 0;
+            selectFirstPoint.x = ((event.pageX - sidebarwidth) / container.clientWidth) * 2 - 1;
+            selectFirstPoint.y = - ((event.pageY) / (container.clientHeight)) * 2 + 1;
+        }
+    }
+
+    function onContainerTouchMove(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (selecting && mousePressed) {
+            if (selectFirstPoint != null) {
+                selectSecondPoint.x = ((event.pageX - sidebarwidth) / container.clientWidth) * 2 - 1;
+                selectSecondPoint.y = - ((event.pageY) / (container.clientHeight)) * 2 + 1;
+                selectionRect.style.width = Math.abs(selectFirstPointAbsolute.x - event.pageX) + 'px';
+                selectionRect.style.height = Math.abs(selectFirstPointAbsolute.y - event.pageY) + 'px';
+                selectionRect.style.left = (event.pageX - selectFirstPointAbsolute.x < 0) ? event.pageX + 'px' : selectFirstPointAbsolute.x + 'px';
+                selectionRect.style.top = (event.pageY - selectFirstPointAbsolute.y < 0) ? event.pageY + 'px' : selectFirstPointAbsolute.y + 'px';
+                createSelectionObject();
+            }
+        }
+    }
+
+    // function onContainerTouchEnd(event) {
+    //     event.preventDefault();
+    //     event.stopPropagation();
+    //     if (selecting) {
+    //         statuslabel.innerHTML = '<p class="status-label">Selection Mode</p>';
+    //         if (selectFirstPoint != null) {
+    //             selectSecondPoint.x = ((event.pageX - sidebarwidth) / container.clientWidth) * 2 - 1;
+    //             selectSecondPoint.y = - ((event.pageY) / (container.clientHeight)) * 2 + 1;
+    //             createSelectionObject(true);
+    //             mousePressed = false;
+    //         }
+    //     }
+    // }
+
+    // If device is tablet or phone and user started touching the screen
+    function handleTouch(event) {
+        newTouchTime = new Date().getTime();
+        var timeBetweenTouches = newTouchTime - lastTouchTime;
+
+        if (event.target.nodeName === "CANVAS") {
+            event.preventDefault();
+            if (moved) {
+                moved = false;
+                if (selecting) {
+                    statuslabel.innerHTML = '<p class="status-label">Selection Mode</p>';
+                    if (selectFirstPoint != null) {
+                        selectSecondPoint.x = ((event.pageX - sidebarwidth) / container.clientWidth) * 2 - 1;
+                        selectSecondPoint.y = - ((event.pageY) / (container.clientHeight)) * 2 + 1;
+                        createSelectionObject(true);
+                        mousePressed = false;
+                    }
+                }
+            } else {
+                if (event.touches.length < 1) {
+
+                    // Calculate the position of the touch relative to the position on the canvas
+                    mouse.x = ((event.pageX - sidebarwidth) / container.clientWidth) * 2 - 1;
+                    mouse.y = - ((event.pageY) / (container.clientHeight)) * 2 + 1;
+                    if (!frozen) {
+                        // Raycast from the position of the touch
+                        raycastObjects();
+                        // Select the object the user touched
+                        select();
+                    }
+
+                    if (timeBetweenTouches < 400) {
+                        if (lastTouchObject === INTERSECTED && INTERSECTED) {
+                            zoomCamera();
+                        }
+                    }
+                }
+                lastTouchObject = INTERSECTED;
+            }
+        } else {
+            if (timeBetweenTouches < 300 && lastTouchObject === null) {
+                event.preventDefault();
+            }
+            lastTouchObject = null;
+        }
+        lastTouchTime = newTouchTime;
+    }
+
+    function handleTouchMove(event) {
+        if (!moved) {
+            moved = true;
+        }
+    }
+
+    // Card Details
+    function newCardDetails() {
+        var cardid = INTERSECTED.parent.name;
+        var filename;
+        var conceptId;
+
+        getStackCard("iterata/lifesciencedb", cardid, function (result) {
+            cardName.innerHTML = result.EnglishName;
+            cardFilename.innerHTML = 'File: ' + result.Filename;
+            cardConceptId.innerHTML = 'Concept ID: ' + result.ConceptID;
+            cardVolume.innerHTML = 'Volume: ' + result.Volume + 'cm3';
+            cardDetails.style.opacity = "1";
+
+        });
+    }
+
+    function removeCardDetails() {
+        cardDetails.style.opacity = "0";
+    }
+
+    // Select one or more objects in the scene
+    // Param "list": if more than one object is to be selected, else null
+    function select(list) {
+        // Reset previous selection
+        // If selectedObjects is longer than 1, a list is selected -> unselecting the whole list
+        if (selectedObjects.length > 1) {
+            // Unselecting the last list
+            for (var i = 0; i < selectedObjects.length; i++) {
+                obj = scene.getObjectByName(selectedObjects[i].name);
+                obj.children[0].material.color.setHex(obj.lastHex);
+            }
+        } else {
+            // There are either 1 or 0 objects selected
+            // If 1 object is selected
+            if (selectedObjects[0] && INTERSECTED) {
+                // And that object is not the last selected object
+                if (selectedObjects[0] != INTERSECTED) {
+                    selectedObjects[0].material.color.setHex(selectedObjects[0].lastHex);
+                } else {
+                    // The object is already selected
+                    return;
+                }
+            }
+        }
+        // Make a new selection
+        // Check if selecting object from raycast or from list
+        if (list) {
+            // Get the Three.Group object by name
+            threeGroup = scene.getObjectByName(group);
+            // For every child in threeGroup
+            for (var i = 0; i < threeGroup.children.length; i++) {
+                threeGroup.children[i].children[0].material.color.setHex(selectColor);
+                var selectedObject = {
+                    name: threeGroup.children[i].name,
+                };
+                selectedObjects.push[selectedObject];
+            }
+        } else {
+            // Selecting from raycast
+            // Check if hovering an object
+            if (INTERSECTED) {
+                selectedObjects = [];
+                // Add the hovered over object to the selectedObjects array
+                selectedObjects[0] = INTERSECTED;
+                // Create previousHex variable so user can still hover over the object and it returns to the right color
+                selectedObjects[0].lastHex = selectedObjects[0].currentHex;
+                selectedObjects[0].material.color.setHex(selectColor);
+                selectedObjects[0].currentHex = selectedObjects[0].material.color.getHex();
+            }
+        }
+    }
+
+    function zoomCamera() {
+        if (INTERSECTED) {
+            if (INTERSECTED != centerObject) {
+                if (displayingTooltip) {
+                    tooltip.style.opacity = 0;
+                    displayingTooltip = false;
+                }
+
+                var boundingBox = new THREE.Box3();
+                boundingBox.setFromObject(INTERSECTED);
+                var bbCenter = new THREE.Vector3(0, 0, 0);
+                boundingBox.getCenter(bbCenter);
+                var bbSize = new THREE.Vector3(0, 0, 0);
+                boundingBox.getSize(bbSize);
+
+                const maxDim = Math.max(bbSize.x, bbSize.y, bbSize.z) + 0.5;
+                const fov = camera.fov * (Math.PI / 180);
+                const fit = Math.abs(maxDim / 2 * Math.tan(fov * 2));
+
+                camera.position.y = bbCenter.y;
+
+                scene.updateMatrixWorld(); //Update world positions
+                var objectWorldPosition = new THREE.Vector3();
+                objectWorldPosition.setFromMatrixPosition(INTERSECTED.matrixWorld);
+
+                camera.updateProjectionMatrix();
+
+                controls.target = bbCenter;
+                var distance = camera.position.distanceTo(bbCenter);
+
+                controls.setStateZoom((fit / distance * -0.82) + 0.8);
+                controls.update();
+
+                centerObject = selectedObjects[0];
+            }
+        }
+    }
+
+    init();
+    // Initializing
+    function init() {
+        console.log('init viewer');
+
+        // Camera is responsible for the controls
+        camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 2, 100000);
+        camera.position.z = 100;
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xd5e5e5);
+        centerGroup = new THREE.Group();
+        scene.add(centerGroup);
+        var light = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(light);
+
+        var dirLight = new THREE.DirectionalLight(0xffffff, 0.4);
+        var dirLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
+        var dirLight3 = new THREE.DirectionalLight(0xffffff, 0.4);
+        dirLight.position.set(0, 2, 0);
+        dirLight.castShadow = false;
+        dirLight2.position.set(0, 0, 2);
+        dirLight2.castShadow = false;
+        dirLight3.position.set(0, 0, -2);
+        dirLight3.castShadow = false;
+        scene.add(dirLight, dirLight2, dirLight3);
+        tooltip.style.opacity = 0;
+
+        var geometry = new THREE.BoxGeometry(20, 20, 20);
+        var material = new THREE.MeshLambertMaterial({ color: 0x99ccff });
+        placeholderObject = new THREE.Mesh(geometry, material);
+        placeholderObject.name = "placeholder";
+        scene.add(placeholderObject);
+        groupBox = new THREE.Box3().setFromObject(placeholderObject);
+        placeholderRotation = 0.001;
+        placeholderDirection = 0;
+        console.log(placeholderObject);
+
+        // Renderer 
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.localClippingEnabled = true
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        sidebarwidth = sidebar.clientWidth;
+
+        // Controls
+
+        controls = new THREE.TrackballControls(camera);
+        controls.rotateSpeed = 3.0;
+        controls.zoomSpeed = 1.2;
+        controls.panSpeed = 0.8;
+        controls.noZoom = false;
+        controls.noPan = false;
+        controls.staticMoving = false;
+
+        // Stats
+
+        // stats = new Stats();
+        // container.appendChild(stats.dom);
+
+        // Raycaster
+
+        raycaster = new THREE.Raycaster();
+        threeCanvas = renderer.domElement;
+        container.appendChild(threeCanvas);
+        placeholder.remove();
+        document.onmousedown = function () { mousePressed = true; };
+        document.onmouseup = function () { mousePressed = false };
+        document.ontouchend = function (event) { handleTouch(event); }
+        document.addEventListener('mousemove', onDocumentMouseMove, false);
+        document.addEventListener('touchmove', handleTouchMove, true);
+
+        selectionRect.addEventListener('mousemove', onContainerMouseMove, false);
+        container.addEventListener('mousemove', onContainerMouseMove, false);
+        container.addEventListener('mousedown', onContainerMouseDown, false);
+        container.addEventListener('mouseup', onContainerMouseUp, false);
+
+        container.addEventListener('touchstart', onContainerTouchStart, false);
+        container.addEventListener('touchmove', onContainerTouchMove, false);
+        // container.addEventListener('touchend', onContainerTouchEnd, false);
+
+        document.ondblclick = function (event) { mousePressed = false; if (!hoveringTooltip) { zoomCamera(); } moved = false; }
+        window.addEventListener('resize', onWindowResize, false);
+        animate();
+    }
+
+    function animate() {
+        if (!sceneHasObjects) {
+            if (placeholderRotation > 0.025) {
+                placeholderRotationFactor = 0.995;
+            } else if (placeholderRotation < 0.0045) {
+                placeholderRotationFactor = 1.005;
+            }
+            placeholderRotation *= placeholderRotationFactor;
+
+            placeholderObject.rotateX(placeholderRotation);
+            placeholderObject.rotateZ(placeholderRotation * 0.75);
+
+        }
+        requestAnimationFrame(animate);
+        if (!hoveringTooltip) {
+            if (!frozen) {
+                controls.update();
+            }
+        }
+        render();
+        if (!displayingTooltip) {
+            newTooltip();
+        }
+
+    }
+
+
+    function render() {
+        renderer.render(scene, camera);
+    }
+
+</script>
+
+<script>
+    // Sidebar functions
+    var slider = document.getElementById("myRange");
+
+    function toggleItem(item) {
+        var sidebaritem = document.getElementById(item);
+        sidebaritem.classList.toggle("active-item");
+    }
+
+    function toggleCatalogItem(itemId) {
+        var item = document.getElementById(itemId);
+        if (!item.classList.contains('disabled')) {
+            item.classList.add('disabled');
+        }
+    }
+
+    function selectSceneObject(listid) {
+        if (activeListElement) {
+            activeListElement.style["background"] = "#eeeeee";
+            activeListElement.style["color"] = "#000000";
+        }
+        var listelement = document.getElementById(listid);
+        listelement.style["background"] = "#4488ff";
+        listelement.style["color"] = "#ffffff";
+        activeListElement = listelement;
+    }
+
+    function hideSceneObject(event, listid) {
+        selectSceneObject(listid);
+        var icon = event.target;
+        if (icon.className === "glyphicon glyphicon-eye-open") {
+            icon.className = "glyphicon glyphicon-eye-close";
+        } else {
+            icon.className = "glyphicon glyphicon-eye-open";
+        }
+        // HIDE OBJECT IN SCENE
+    }
+
+    function toggleToolBar() {
+        tools.classList.toggle("tools-hidden");
+        toolsHeader.classList.toggle("tools-hidden");
+    }
+
+    function selectFooterItem(itemId) {
+        if (toolFooterActiveItem != null) {
+            toolFooterActiveItem.classList.remove('selected');
+        }
+        toolFooterActiveItem = document.getElementById(itemId);
+        if (!toolFooterActiveItem.classList.contains('selected')) {
+            toolFooterActiveItem.classList.add('selected');
+        }
+    }
+
+    function openTool(name) {
+        if (!isDrawing) {
+            tool.classList.toggle("hidden");
+            if (tool.classList.contains("hidden")) {
+                controls.enabled = true;
+                frozen = false;
+            } else {
+                console.log(tool.classList);
+                controls.enabled = false;
+                frozen = true;
+            }
+            switch (name) {
+                case "color":
+                    choosingColor = true;
+                    if (!toolFooter.classList.contains('active')) {
+                        toolFooter.classList
+                    }
+                    loadColorpickingPanel();
+                    break;
+
+                case "settings":
+                    toolFooter.classList.remove('active');
+                    break;
+
+                default: break;
+            }
+        }
+    }
+
+    colorButton.onclick = function () {
+        openTool("color");
+    }
+    drawButton.onclick = function () {
+        if (frozen && !tool.classList.contains('hidden')) {
+            tool.classList.add('hidden');
+            controls.enabled = false;
+            statuslabel.classList.add('active');
+            statuslabel.innerHTML = '<p class="status-label">Drawing Mode</p>'
+            isDrawing = true;
+        } else {
+            controls.enabled = !controls.enabled;
+            statuslabel.classList.toggle('active');
+            frozen = !frozen;
+            isDrawing = !isDrawing;
+            if (isDrawing) {
+                statuslabel.innerHTML = '<p class="status-label">Drawing Mode</p>'
+            }
+        }
+        resetDrawingCanvas();
+    }
+    // Reset button to re-center the 3d viewer
+    resetButton.onclick = function () {
+        if (!isDrawing) {
+            zoomOnCenterObject();
+        }
+    }
+
+
+</script>
+
+<script>
+
+    // Drawing Canvas
+    drawingCanvas = document.createElement('canvas');
+    drawingCanvas.width = container.clientWidth * 5;
+    drawingCanvas.height = container.clientHeight * 5;
+    drawingCanvas.classList.add("drawingCanvas");
+    drawingCanvas.context = drawingCanvas.getContext('2d');
+    drawingCanvas.context.scale(5, 5);
+    container.appendChild(drawingCanvas);
+    var clickX;
+    var clickY;
+    var clickDrag;
+    var paint;
+
+    function resetDrawingCanvas() {
+
+        drawingCanvas.context.clearRect(0, 0, container.clientWidth, container.clientHeight);
+        clickX = new Array();
+        clickY = new Array();
+        clickDrag = new Array();
+    }
+
+    function addClick(x, y, dragging) {
+        clickX.push(x);
+        clickY.push(y);
+        clickDrag.push(dragging);
+    }
+
+    function redraw() {
+        drawingCanvas.context.clearRect(0, 0, drawingCanvas.context.canvas.width, drawingCanvas.context.canvas.height); // Clears the canvas
+
+        drawingCanvas.context.strokeStyle = "#cc6b46";
+        drawingCanvas.context.lineJoin = "round";
+        drawingCanvas.context.lineWidth = 5;
+
+        for (var i = 0; i < clickX.length; i++) {
+            drawingCanvas.context.beginPath();
+            if (clickDrag[i] && i) {
+                drawingCanvas.context.moveTo(clickX[i - 1], clickY[i - 1]);
+            } else {
+                drawingCanvas.context.moveTo(clickX[i] - 1, clickY[i]);
+            }
+            drawingCanvas.context.lineTo(clickX[i], clickY[i]);
+            drawingCanvas.context.closePath();
+            drawingCanvas.context.stroke();
+        }
+    }
+
+    drawingCanvas.onmousedown = function (event) {
+        if (frozen && !selecting) {
+            paint = true;
+            addClick(event.pageX - sidebar.clientWidth, event.pageY);
+            redraw();
+        } else {
+            if (paint) {
+                paint = false;
+            }
+        }
+    }
+
+    drawingCanvas.ontouchstart = function (event) {
+        if (frozen && !selecting) {
+            event.preventDefault();
+            paint = true;
+            addClick(event.pageX - sidebar.clientWidth, event.pageY);
+            redraw();
+        } else {
+            if (paint) {
+                paint = false;
+            }
+        }
+    }
+
+    drawingCanvas.onmousemove = function (event) {
+        if (paint && !selecting) {
+            addClick(event.pageX - sidebar.clientWidth, event.pageY, true);
+            redraw();
+        }
+    }
+
+    drawingCanvas.ontouchmove = function (event) {
+        if (paint && !selecting) {
+            event.preventDefault();
+            event.stopPropagation();
+            drawingCanvas.context.beginPath();
+            drawingCanvas.context.arc(event.pageX - sidebar.clientWidth, event.pageY, 5, 0, 2 * Math.PI);
+            drawingCanvas.context.stroke();
+            drawingCanvas.context.fill();
+            addClick(event.pageX - sidebar.clientWidth, event.pageY, true);
+            redraw();
+        }
+    }
+
+    drawingCanvas.onmouseup = function (event) {
+        if (paint && !selecting) {
+            paint = false;
+        }
+    }
+
+    drawingCanvas.ontouchend = function (event) {
+        if (paint && !selecting) {
+            paint = false;
+        }
+    }
+
+    drawingCanvas.onmouseleave = function (event) {
+        if (paint && !selecting) {
+            paint = false;
+        }
+    }
+
+    drawingCanvas.onmouseenter = function () {
+        if (!selecting && isDrawing && mousePressed) {
+            paint = true;
+        }
+    }
+
+
+</script>
+
+<script>
+    // Selection Tool
+
+    var invertedNormals = false;
+
+    function createSelectionObject(mouseup) {
+        // if (selectMesh) {
+        //     scene.remove(selectMesh);
+        // }
+
+
+
+        if (selectFirstPoint.y > selectSecondPoint.y && selectFirstPoint.x > selectSecondPoint.x) {
+            invertedNormals = true;
+        } else if (selectFirstPoint.y < selectSecondPoint.y && selectFirstPoint.x < selectSecondPoint.x) {
+            invertedNormals = true;
+        } else {
+            invertedNormals = false;
+        }
+
+        thirdPoint.x = selectFirstPoint.x;
+        thirdPoint.y = selectSecondPoint.y;
+
+        fourthPoint.x = selectSecondPoint.x;
+        fourthPoint.y = selectFirstPoint.y;
+
+        var point1 = new THREE.Vector3();
+        var point2 = new THREE.Vector3();
+        var point3 = new THREE.Vector3();
+        var point4 = new THREE.Vector3();
+        var cameraPoint = new THREE.Vector3();
+
+        var distanceToPointZero = camera.position.distanceTo(new THREE.Vector3(0, 0, 0)) + 1000;
+
+        raycaster.setFromCamera(selectFirstPoint, camera);
+        raycaster.ray.at(distanceToPointZero, point1);
+        raycaster.setFromCamera(thirdPoint, camera);
+        raycaster.ray.at(distanceToPointZero, point2);
+        raycaster.setFromCamera(selectSecondPoint, camera);
+        raycaster.ray.at(distanceToPointZero, point3);
+        raycaster.setFromCamera(fourthPoint, camera);
+        raycaster.ray.at(distanceToPointZero, point4);
+        raycaster.setFromCamera(nullPoint, camera);
+        raycaster.ray.at(5, cameraPoint);
+
+        var geometry = new THREE.Geometry();
+        geometry.vertices.push(point1);
+        geometry.vertices.push(point2);
+        geometry.vertices.push(point3);
+        geometry.vertices.push(point4);
+        geometry.vertices.push(cameraPoint);
+
+        geometry.faces.push(new THREE.Face3(0, 1, 2));
+        geometry.faces.push(new THREE.Face3(0, 2, 3));
+        geometry.faces.push(new THREE.Face3(0, 1, 4));
+        geometry.faces.push(new THREE.Face3(1, 2, 4));
+        geometry.faces.push(new THREE.Face3(2, 3, 4));
+        geometry.faces.push(new THREE.Face3(3, 0, 4));
+        // subtractPyramid(geometry);
+
+        // selectMesh = new THREE.Mesh(box, new THREE.MeshLambertMaterial({ color: 0x99ccff }));
+        // selectMesh.material.side = THREE.DoubleSide;
+        // selectMesh.material.transparent = true;
+        // selectMesh.material.opacity = 0.2;
+        // scene.add(selectMesh);
+
+        if (mouseup) {
+            var distance = Math.abs(selectFirstPoint - selectSecondPoint);
+            if (distance < 0.01) {
+                console.log('area too small')
+            } else {
+                showSelectOptions();
+            }
+            // if (selectMesh) {
+            //     // scene.remove(selectMesh);
+            // }
+        } else {
+            computeNormals(geometry, cameraPoint);
+        }
+    }
+
+    function addSelection() {
+        selectButton.click();
+    }
+
+    function removeSelection() {
+        for (var i = 0; i < offsceneObjects.length; i++) {
+            offsceneObjects[i].material.emissive.setHex(0x000000);
+        }
+        selectionRect.style.width = 0;
+        selectionRect.style.height = 0;
+    }
+
+    function showSelectOptions() {
+        selectOptions.classList.remove('tools-hidden');
+    }
+
+    function hideSelectOption() {
+        selectOptions.classList.add('tools-hidden');
+    }
+
+    function computeNormals(geometry, cameraPoint) {
+        geometry.computeFaceNormals();
+        var rs1 = geometry.faces[2].normal.dot(cameraPoint);
+        var rs2 = geometry.faces[3].normal.dot(cameraPoint);
+        var rs3 = geometry.faces[4].normal.dot(cameraPoint);
+        var rs4 = geometry.faces[5].normal.dot(cameraPoint);
+
+        if (invertedNormals) {
+            for (var i = 0; i < offsceneObjects.length; i++) {
+                if (offsceneObjects[i].parent) {
+
+                    var check = false;
+                    var centerPoint = objectCenters[offsceneObjects[i].parent.name];
+                    if (centerPoint.dot(geometry.faces[2].normal) >= rs1) {
+                        // console.log('rs1');
+                        if (centerPoint.dot(geometry.faces[3].normal) >= rs2) {
+                            // console.log('rs2');
+                            if (centerPoint.dot(geometry.faces[4].normal) >= rs3) {
+                                // console.log('rs3');
+                                if (centerPoint.dot(geometry.faces[5].normal) >= rs4) {
+                                    console.log('success');
+                                    check = true;
+                                    offsceneObjects[i].material.emissive.setHex(0xff9944);
+                                }
+                            }
+                        }
+                    }
+                    if (!check) {
+                        offsceneObjects[i].material.emissive.setHex(0x000000);
+                    }
+                }
+            }
+        } else {
+
+            for (var i = 0; i < offsceneObjects.length; i++) {
+                if (offsceneObjects[i].parent) {
+                    var check = false;
+                    var centerPoint = objectCenters[offsceneObjects[i].parent.name];
+                    if (centerPoint.dot(geometry.faces[2].normal) <= rs1) {
+                        // console.log('rs1');
+                        if (centerPoint.dot(geometry.faces[3].normal) <= rs2) {
+                            // console.log('rs2');
+                            if (centerPoint.dot(geometry.faces[4].normal) <= rs3) {
+                                // console.log('rs3');
+                                if (centerPoint.dot(geometry.faces[5].normal) <= rs4) {
+                                    console.log('success');
+                                    check = true;
+                                    offsceneObjects[i].material.emissive.setHex(0xff9944);
+                                }
+                            }
+                        }
+                    }
+                    if (!check) {
+                        offsceneObjects[i].material.emissive.setHex(0x000000);
+                    }
+                }
+            }
+        }
+    }
+
+    function subtractPyramid(pyramid) {
+        var cubeGeometry = new THREE.BoxGeometry(5000, 5000, 5000);
+        var cubecsg = new ThreeBSP(cubeGeometry);
+        var pyramidcsg = new ThreeBSP(pyramid);
+        cubecsg = cubecsg.subtract(pyramidcsg);
+
+        var cubeMesh = new THREE.Mesh(cubecsg.toGeometry(), new THREE.MeshLambertMaterial({ color: 0x99ccff }));
+        cubeMesh.material.side = THREE.DoubleSide;
+        cubeMesh.material.transparent = true;
+        cubeMesh.material.opacity = 0.1;
+        scene.remove(selectMesh);
+        scene.add(cubeMesh);
+
+    }
+</script>
+
+<script>
+
+    var colorpickingCanvas = document.createElement('canvas');
+    var colorpickingImage = new Image();
+    colorpickingImage.setAttribute("src", "resources/gradient2.jpg");
+    var draggingColor;
+    var selectionPosition;
+    colorpickingCanvas.context = colorpickingCanvas.getContext('2d');
+    toolPanel.appendChild(colorpickingCanvas);
+
+    function loadColorpickingPanel() {
+        draggingColor = false;
+        selectionPosition = {};
+        // colorpickingCanvas.style.width = "100%";
+        // colorpickingCanvas.style.height = "100%";
+        colorpickingCanvas.width = toolPanel.clientWidth;
+        colorpickingCanvas.height = toolPanel.clientHeight;
+        // colorpickingCanvas.context.scale(2, 2);
+        colorpickingCanvas.context.drawImage(colorpickingImage, 0, 0, colorpickingCanvas.width + 10, colorpickingCanvas.height);
+        colorpickingCanvas.context.fillStyle = "#ffffff";
+    }
+
+    function rgbToHex(rgb) {
+        var hex = Number(rgb).toString(16);
+        if (hex.length < 2) {
+            hex = "0" + hex;
+        }
+        return hex;
+    }
+
+    function resetColor() {
+        switch (toolFooterActiveItem.innerHTML) {
+            case "Background":
+                scene.background.setHex(backgroundColorDefault);
+                toolFooterActiveItem.style.background = '#' + backgroundColorDefault.substring(2);
+                break;
+
+            case "Hover":
+                hoverColor = hoverColorDefault;
+                toolFooterActiveItem.style.background = '#' + hoverColorDefault.substring(2);
+                break;
+
+            case "Select":
+                selectColor = selectColorDefault;
+                toolFooterActiveItem.style.background = '#' + selectColorDefault.substring(2);
+                break;
+
+            default: break;
+        }
+    }
+
+    function handleNewColor(data) {
+        toolFooterActiveItem.style.background = "rgb(" + data[0] + ',' + data[1] + ',' + data[2] + ")";
+        if (toolFooterActiveItem.innerHTML === "Background") {
+            scene.background.r = data[0] / 255;
+            scene.background.g = data[1] / 255;
+            scene.background.b = data[2] / 255;
+        } else if (toolFooterActiveItem.innerHTML === "Hover") {
+            hoverColor = ('0x' + rgbToHex(data[0]) + rgbToHex(data[1]) + rgbToHex(data[2]));
+        } else if (toolFooterActiveItem.innerHTML === "Select") {
+            selectColor = ('0x' + rgbToHex(data[0]) + rgbToHex(data[1]) + rgbToHex(data[2]));
+        }
+    }
+
+    colorpickingCanvas.onmousedown = function (event) {
+        if (choosingColor) {
+            draggingColor = true;
+            selectionPosition.x = (event.pageX - (windowon.innerWidth / 2));
+            selectionPosition.y = (event.pageY - (window.innerHeight / 4));
+
+            colorpickingCanvas.context.drawImage(colorpickingImage, 0, 0, colorpickingCanvas.width + 10, colorpickingCanvas.height);
+            data = colorpickingCanvas.context.getImageData(selectionPosition.x, selectionPosition.y, 1, 1).data;
+            handleNewColor(data);
+
+            colorpickingCanvas.context.beginPath();
+            colorpickingCanvas.context.arc(event.pageX - (window.innerWidth / 2), event.pageY - (window.innerHeight * 0.25), 5, 0, 2 * Math.PI);
+            colorpickingCanvas.context.stroke();
+            colorpickingCanvas.context.fill();
+        }
+    }
+
+    colorpickingCanvas.ontouchstart = function (event) {
+        if (choosingColor) {
+            draggingColor = true;
+            selectionPosition.x = (event.pageX - (window.innerWidth / 2));
+            selectionPosition.y = (event.pageY - (window.innerHeight / 4));
+
+            colorpickingCanvas.context.drawImage(colorpickingImage, 0, 0, colorpickingCanvas.width + 10, colorpickingCanvas.height);
+            data = colorpickingCanvas.context.getImageData(selectionPosition.x, selectionPosition.y, 1, 1).data;
+            handleNewColor(data);
+
+            colorpickingCanvas.context.beginPath();
+            colorpickingCanvas.context.arc(event.pageX - (window.innerWidth / 2), event.pageY - (window.innerHeight * 0.25), 5, 0, 2 * Math.PI);
+            colorpickingCanvas.context.stroke();
+            colorpickingCanvas.context.fill();
+        }
+    }
+
+    colorpickingCanvas.onmousemove = function (event) {
+        if (choosingColor) {
+            if (draggingColor) {
+                selectionPosition.x = (event.pageX - (window.innerWidth / 2));
+                selectionPosition.y = (event.pageY - (window.innerHeight / 4));
+                colorpickingCanvas.context.drawImage(colorpickingImage, 0, 0, colorpickingCanvas.width + 10, colorpickingCanvas.height);
+                data = colorpickingCanvas.context.getImageData(selectionPosition.x, selectionPosition.y, 1, 1).data;
+                handleNewColor(data);
+
+                colorpickingCanvas.context.beginPath();
+                colorpickingCanvas.context.arc(event.pageX - (window.innerWidth / 2), event.pageY - (window.innerHeight * 0.25), 5, 0, 2 * Math.PI);
+                colorpickingCanvas.context.stroke();
+                colorpickingCanvas.context.fill();
+            }
+        }
+    }
+
+    colorpickingCanvas.ontouchmove = function (event) {
+        if (choosingColor) {
+            if (draggingColor) {
+                event.preventDefault();
+                selectionPosition.x = (event.pageX - (window.innerWidth / 2));
+                selectionPosition.y = (event.pageY - (window.innerHeight / 4));
+                colorpickingCanvas.context.drawImage(colorpickingImage, 0, 0, colorpickingCanvas.width + 10, colorpickingCanvas.height);
+                data = colorpickingCanvas.context.getImageData(selectionPosition.x, selectionPosition.y, 1, 1).data;
+                handleNewColor(data);
+
+                colorpickingCanvas.context.beginPath();
+                colorpickingCanvas.context.arc(event.pageX - (window.innerWidth / 2), event.pageY - (window.innerHeight * 0.25), 5, 0, 2 * Math.PI);
+                colorpickingCanvas.context.stroke();
+                colorpickingCanvas.context.fill();
+            }
+        }
+    }
+
+    colorpickingCanvas.onmouseup = function () {
+        draggingColor = false;
+    }
+
+    colorpickingCanvas.ontouchend = function () {
+        draggingColor = false;
+    }
+
+</script>
+
+<script>
+    // Stack/Instance calls
+
+    // Concatenate
+    function concatenate(prefix, suffix) {
+        infix = "";
+        if (!prefix.endsWith("/") && !suffix.startsWith("/")) infix = "/";
+        return prefix + infix + suffix;
+    }
+
+    // Submit search when pressing enter in the inputfield
+    // Same as pressing the search button
+    function keySearch(event) {
+        if (event.which == 13 || event.keyCode == 13) {
+            var item = profiles.options[profiles.selectedIndex].value;
+            profile = encodeURI(item);
+            searchInField();
+        }
+    };
+
+    // Preparing the search queries relative to the selected search options and input
+    function searchInField(searchInput) {
+        if (searchInput) {
+            var text = searchInput;
+            var fieldname = "Entity";
+            method.value = "ADD"
+        } else {
+            var text = searchvalue.value;
+            var fieldname = searchField.options[searchField.selectedIndex].value;
+        }
+        console.log('Search in field: ' + fieldname);
+        // if (fieldname === "All") {
+        //     var searchURL = concatenate(baseURL, "stack/instance.json?stackId=" + stackId + "&backgroundId=table&search=[" + encodeURI(restriction) + "{contains:\"" + encodeURI(text) + "\"},{profile:\"" + profile + "\"}]&order=[{orderBy:\"" + encodeURI(orderBy) + "\"},{orderSense:\"" + encodeURI(orderSense) + "\"}]");
+        // } else {
+        console.log('creating search url: ');
+        var searchURL = concatenate(baseURL, "stack/instance.json?stackId=" + stackId + "&backgroundId=table&search=[{" + fieldname + ":\"" + encodeURI(text) + "\"}]");
+        // }
+        console.log(searchURL);
+        // Create a search-instance on the stack
+        initInstance(searchURL);
+    }
+
+    function initInstance(url) {
+        console.log("Init instance " + url);
+        var http = new XMLHttpRequest();
+        http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var json = http.responseText;
+                instanceId = JSON.parse(json);
+                console.log(json);
+                console.log("instanceId: " + instanceId);
+                range(start, limit);
+                return json;
+            }
+        };
+        http.open("POST", url, true);
+        http.send();
+    }
+
+    // Download all entries from the generated search-instance (json-formatted)
+    // Parse the data and depending on the selected option proceed with corresponding action
+    function range(start, limit) {
+        var models = [];
+        dataURL = concatenate(baseURL, "stack/download.json?id=" + instanceId + "&backgroundId=table");
+        console.log("Range for instance: " + dataURL);
+        var http = new XMLHttpRequest();
+        http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var json = JSON.parse(http.responseText);
+                if (json.length >= 6058) {
+                    json = [];
+                } else {
+                    console.log(json);
+                    // Load all the base 3d models into and array and sort it to make spotting duplicates easier
+                    for (var i = 0; i < json.length; i++) {
+                        tempArray = json[i]["Elements"].split(',');
+                        for (var j = 0; j < tempArray.length; j++) {
+                            tempArray[j] = tempArray[j].trim();
+                            if (tempArray[j] !== "") {
+                                models.push(tempArray[j]);
+                            }
+                        }
+                    }
+                    // Sorting models to make it easier to spot duplicates
+                    // models.sort();
+                    if (models.length > 0) {
+                        var item = method.options[method.selectedIndex].value;
+                        switch (item) {
+                            case "ADD":
+                                console.log(models);
+                                addElements(searchvalue.value, models);
+                                break;
+
+                            case "REMOVE":
+                                console.log(models);
+                                removeElements(models);
+                                break;
+
+                            case "FIND":
+                                console.log(models);
+                                addModelsToHighlightList(models);
+                                break;
+                            case "": break;
+                        }
+                    }
+                }
+            }
+        };
+        // The http get-request
+        http.open("GET", dataURL);
+        http.send();
+    }
+
+    function getStackCard(stackId, cardId, callback) {
+        var cardURL = concatenate(baseURL, "stack/getCard.json?id=" + stackId + "&cardId=" + cardId);
+        getCard(cardURL, function (result) {
+            callback(result);
+        });
+    }
+
+    function getCard(url, callback) {
+        console.log(url);
+        var http = new XMLHttpRequest();
+        http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var json = http.responseText;
+                callback(JSON.parse(json));
+            }
+        };
+        http.open("GET", url, true);
+        http.send();
+    }
+</script>
+
+<script>
+    // 3D Viewer functions
+    var groupCenter;
+    var size;
+    var groupBox;
+
+    function calculateNewBoundingBox() {
+        groupBox = new THREE.Box3().setFromObject(centerGroup);
+    }
+
+    function zoomOnCenterObject() {
+        groupCenter = new THREE.Vector3(0, 0, 0);
+        groupBox.getCenter(groupCenter);
+        var groupSize = new THREE.Vector3(0, 0, 0);
+
+        groupBox.getSize(groupSize);
+
+        const maxDim = Math.max(groupSize.x, groupSize.y, groupSize.z) + 0.5;
+        const fov = camera.fov * (Math.PI / 180);
+        size = (Math.abs(maxDim / 2 * Math.tan(fov * 2)) * 0.7) + 50;
+        console.log(size);
+        camera.position.y = groupCenter.y;
+        camera.position.z = groupCenter.z + 500;
+        scene.updateMatrixWorld(); //Update world positions
+        var objectWorldPosition = new THREE.Vector3();
+        objectWorldPosition.setFromMatrixPosition(centerGroup.matrixWorld);
+
+        camera.updateProjectionMatrix();
+
+        controls.target = groupCenter;
+        var distance = camera.position.distanceTo(groupCenter);
+        controls.setStateZoom((size / distance * -0.82) + 0.9);
+        controls.update();
+    }
+
+    function addElements(groupname, elements) {
+        var objectGroup = new THREE.Group();
+        objectGroup.name = groupname;
+        centerGroup.add(objectGroup);
+
+        function addedElements() {
+            // Callback after "addElements"-function is finished
+            console.log(objectGroup);
+            calculateNewBoundingBox();
+        }
+
+        loadNextFile(0, addedElements, null);
+
+        function loadNextFile(i, filesLoaded, lastModel) {
+            if (i >= elements.length) {
+                if (!sceneHasObjects) {
+                    scene.remove(scene.getObjectByName("placeholder"));
+                    sceneHasObjects = true;
+                    console.log('zoom');
+                    calculateNewBoundingBox();
+                    zoomOnCenterObject();
+                }
+
+                filesLoaded();
+                return;
+            }
+
+            var index = i;
+
+            if (lastModel !== null) {
+                if (lastModel === elements[index]) {
+                    i = i + 1;
+                    loadNextFile(i, filesLoaded, elements[index]);
+                    return;
+                }
+            }
+
+            if (modelsInScene[elements[index]]) {
+                obj = scene.getObjectByName(elements[index]);
+                if (obj) {
+                    obj.groups.push(groupname);
+                }
+                i = i + 1;
+                loadNextFile(i, filesLoaded, elements[index]);
+            } else {
+                new THREE.MTLLoader()
+                    .setPath('resources/models/materials/')
+                    .load(elements[index] + '.obj.mtl', function (materials) {
+                        materials.preload();
+                        modelsInScene[elements[index]] = true;
+                        i = i + 1;
+                        loadNextFile(i, filesLoaded, elements[index]);
+                        objloader = new THREE.OBJLoader()
+                            .setMaterials(materials)
+                            .setPath('resources/models/')
+                            .load(elements[index] + '.obj', function (object) {
+                                object.position.y = 75;
+                                object.position.z = -75;
+                                object.rotation.x = -Math.PI / 2;
+                                // object.position.z = -1;
+                                // object.scale.x = 0.01;
+                                // object.scale.y = 0.01;
+                                // object.scale.z = 0.01;
+                                // object.children[0].material.transparent = true;
+                                object.groups = [];
+                                object.groups.push(groupname);
+                                offsceneObjects.push(object.children[0]);
+                                objectGroup.add(object);
+                                object.index = (offsceneObjects.length - 1);
+                                createCenterPosition(object);
+                                csgGeometries[elements[index]] = new ThreeBSP(object.children[0].geometry);
+                                if (!sceneHasObjects && index > 60) {
+                                    scene.remove(scene.getObjectByName("placeholder"));
+                                    sceneHasObjects = true;
+                                    calculateNewBoundingBox();
+                                    zoomOnCenterObject();
+                                }
+                            });
+                    });
+            }
+        }
+    }
+
+    function createCenterPosition(object) {
+        var objectBoundingBox = new THREE.Box3().setFromObject(object);
+        var centerPoint = new THREE.Vector3(0, 0, 0);
+        objectBoundingBox.getCenter(centerPoint);
+        objectCenters[object.name] = centerPoint;
+    }
+
+    function removeElements(toRemove) {
+        for (var i = 0; i < toRemove.length; i++) {
+            if (modelsInScene[toRemove[i]]) {
+                for (var j = 0; j < objectGroup.children.length; j++) {
+                    if (objectGroup.children[j].filename === toRemove[i]) {
+                        var num = objectGroup.children[j].index;
+                        // offsceneObjects[num] = new THREE.Mesh();
+                        offsceneObjects.splice(num, 1);
+                        objectGroup.children.splice(j, 1);
+                        modelsInScene[toRemove[i]] = false;
+                    }
+                }
+            }
+        }
+        refreshObjectList();
+    }
+
+    function makeAllModelsTransparent() {
+        offsceneObjects = [];
+
+        if (Object.keys(modelsInScene).length > 0) {
+            for (var p in modelsInScene) {
+                obj = scene.getObjectByName(p);
+                if (obj && obj.children[0].type === "Mesh") {
+                    var mat = obj.children[0].material;
+                    mat.color.setHex(0x000000);
+                    mat.transparent = true;
+                    mat.opacity = 0.15;
+                }
+            }
+            highlightMode = true;
+
+        } else {
+            console.log('no models in scene');
+        }
+    }
+
+    function makeAllModelsNonTransparent() {
+        offsceneObjects = [];
+
+        if (Object.keys(modelsInScene).length > 0) {
+            for (var p in modelsInScene) {
+                obj = scene.getObjectByName(p);
+                console.log(obj);
+                if (obj && obj.children[0].type === "Mesh") {
+                    var mat = obj.children[0].material;
+                    mat.color.setHex(0x000000);
+                    mat.transparent = false;
+                    mat.opacity = 1;
+                }
+            }
+            highlightMode = false;
+
+        } else {
+            console.log('no models in scene');
+        }
+    }
+
+    function removeHighlightFromModels(event) {
+        var toRemove = event.target.id;
+        var listToRemove;
+
+        for (var i = 0; i < highlightedModels.length; i++) {
+            if (highlightedModels[i].value === toRemove) {
+                listToRemove = highlightedModels[i].modelList;
+                highlightedModels.splice(i, 1);
+            }
+        }
+
+        console.log(listToRemove);
+        for (var i = 0; i < listToRemove.length; i++) {
+            console.log(highlightedObjects[listToRemove[i]]);
+            if (highlightedObjects[listToRemove[i]] != null) {
+                for (var j = 1; j < highlightedObjects[listToRemove[i]].length; j++) {
+                    console.log(highlightedObjects[listToRemove[i]][j]);
+                    if (highlightedObjects[listToRemove[i]][j] === toRemove) {
+                        highlightedObjects[listToRemove[i]].splice(j, 1);
+                    }
+                    console.log(listToRemove[i]);
+                }
+            }
+        }
+
+        for (var p in highlightedObjects) {
+            if (highlightedObjects[p].length === 1) {
+                delete highlightedObjects[p];
+            }
+        }
+
+        // highlightList.innerHTML = '<li class="highlight-header">Highlights:</li>';
+        for (var i = 0; i < highlightedModels.length; i++) {
+            highlightList.innerHTML += highlightedModels[i].html;
+        }
+
+        highlightModels();
+    }
+
+    // Adding a list of models to highlight list
+    function addModelsToHighlightList(toHighlight) {
+        // Creating a new highlightSearch for this request
+        var highlightSearch = {};
+        var value = searchvalue.value;
+        highlightSearch.value = value;
+
+        toHighlight.sort();
+        var newlist = [];
+        var temp = null;
+        for (var i = 0; i < toHighlight.length; i++) {
+            if (temp != toHighlight[i]) {
+                temp = toHighlight[i];
+                if (!highlightedObjects[toHighlight[i]]) {
+                    highlightedObjects[toHighlight[i]] = [""];
+                }
+                highlightedObjects[toHighlight[i]].push(value);
+                newlist.push(toHighlight[i]);
+            }
+        }
+        // Adding the highlighted Search to a list so the user can remove it again
+        highlightSearch.html = '<li id="highlight">' + value + ' count: ' + newlist.length + ' <button id="' + value + '" style="float: right; font-size: 14px;" onclick="removeHighlightFromModels(event)">x</button></li>';
+        highlightList.innerHTML += highlightSearch.html;
+
+        highlightSearch.modelList = newlist;
+        highlightedModels.push(highlightSearch);
+        highlightModels(newlist);
+    }
+
+    function highlightModels(list) {
+        console.log('highlight');
+        if (Object.keys(highlightedObjects).length > 0) {
+            makeAllModelsTransparent();
+            for (var p in highlightedObjects) {
+                if (highlightedObjects[p].length > 1) {
+                    obj = scene.getObjectByName(p);
+                    if (obj) {
+                        obj.children[0].material.color.setHex(0x99cc22);
+                        obj.children[0].material.transparent = false;
+                        obj.children[0].material.opacity = 1;
+                        offsceneObjects.push(obj.children[0]);
+                    }
+                } else {
+
+                }
+            }
+        } else {
+            makeAllModelsNonTransparent();
+        }
+
+    }
+
+    // TODO
+    removeButton.onclick = function () {
+        console.log(selectedObjects);
+        if (selectedObjects.length === 1) {
+            var index = selectedObjects[0].parent.index;
+            console.log('index: ' + index);
+            offsceneObjects[index] = new THREE.Mesh();
+            selectedObjects[0].material.visible = false;
+            selectedObjects = [];
+            INTERSECTED = null;
+        }
+    }
+
+    selectButton.onclick = function () {
+        if (frozen && !tool.classList.contains('hidden')) {
+            tool.classList.add('hidden');
+            controls.enabled = false;
+            statuslabel.classList.add('active');
+            selecting = true;
+            statuslabel.innerHTML = '<p class="status-label">Selection Mode</p>'
+
+        } else {
+            controls.enabled = !controls.enabled;
+            statuslabel.classList.toggle('active');
+            frozen = !frozen;
+            selecting = !selecting;
+            if (!frozen) {
+                selectionRect.style.width = 0;
+                selectionRect.style.height = 0;
+                if (!selectOptions.classList.contains('tools-hidden')) {
+                    selectOptions.classList.add('tools-hidden');
+                }
+            } else {
+                statuslabel.innerHTML = '<p class="status-label">Selection Mode</p>'
+            }
+        }
+    }
+</script>
+
+<script>
+    // Script to fill the profile select (AND, OR, etc...)
+    var profiles = document.getElementById("profiles");
+    console.log("Initializing profiles");
+    var html = "<optgroup label='VerknÃ¼pfung'><option style='font-weight:bold' value='AND'>AND</option><option style='font-weight:bold' value='OR'>OR</option></optgroup>";
+    document.getElementById("profiles").innerHTML = html;
+    var url = concatenate(baseURL, "profile/getAllProfiles?stackId=" + stackId);
+    var http = new XMLHttpRequest();
+    http.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var json = http.responseText;
+            var allProfiles = JSON.parse(json);
+            var html = "<optgroup label='VerknÃ¼pfung'><option style='font-weight:bold' value='AND'>AND</option><option style='font-weight:bold' value='OR'>OR</option></optgroup>";
+            html += "<optgroup label='Suche'>";
+            for (var key in allProfiles.profiles) {
+                html += "<option value='" + allProfiles.profiles[key] + "'>" + key + "</option>";
+            }
+            html += "</optgroup>";
+            html += "<optgroup label='Profile'>";
+            for (var key in allProfiles.custom) {
+                html += "<option value='" + allProfiles.custom[key] + "'>" + key + "</option>";
+            }
+            html += "</optgroup>";
+            document.getElementById("profiles").innerHTML = html;
+            return json;
+        }
+    };
+    http.open("GET", url);
+    http.send();
+</script>
+
+</html>
